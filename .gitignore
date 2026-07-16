@@ -1,0 +1,9 @@
+/ghome
+/ghome.exe
+*.exe
+dist/
+.idea/
+.vscode/
+*.session.json
+.env
+.DS_Store

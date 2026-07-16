@@ -1,0 +1,41 @@
+version: 2
+
+project_name: ghome
+
+builds:
+  - id: ghome
+    main: ./cmd/ghome
+    binary: ghome
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+    ignore:
+      - goos: windows
+        goarch: arm64
+    ldflags:
+      - -s -w -X main.version={{.Version}}
+
+archives:
+  - formats: [tar.gz]
+    format_overrides:
+      - goos: windows
+        formats: [zip]
+    name_template: >-
+      {{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}
+    files:
+      - README.md
+
+checksum:
+  name_template: checksums.txt
+
+release:
+  draft: false
+
+changelog:
+  sort: asc
