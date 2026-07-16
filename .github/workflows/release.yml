@@ -1,4 +1,4 @@
-name: release
+name: Release
 
 on:
   push:
@@ -9,19 +9,29 @@ permissions:
   contents: write
 
 jobs:
-  goreleaser:
+  release:
+    name: GoReleaser
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
       - uses: actions/setup-go@v5
         with:
           go-version-file: go.mod
-      - uses: goreleaser/goreleaser-action@v6
+          cache: true
+
+      - name: Run GoReleaser
+        uses: goreleaser/goreleaser-action@v6
         with:
           distribution: goreleaser
           version: "~> v2"
           args: release --clean
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Index module on proxy.golang.org
+        # Makes `go install github.com/shotah/go-google-home-mcp/cmd/ghome@${{ github.ref_name }}` resolve quickly.
+        run: |
+          curl -fsSL "https://proxy.golang.org/github.com/shotah/go-google-home-mcp/@v/${GITHUB_REF_NAME}.info" || true

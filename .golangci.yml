@@ -49,10 +49,6 @@ linters:
       - legacy
       - std-error-handling
     rules:
-      # Declarative endpoint registry repeats HTTP verbs, param names, and descriptions by design.
-      - linters:
-          - goconst
-        path: endpoint/definitions/
       - linters:
           - goconst
           - gosec

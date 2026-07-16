@@ -124,8 +124,15 @@ Mount `secrets/ghome` → `/zeroclaw-data/.config/ghome` and set `HOME=/zeroclaw
 ```bash
 make build
 make test
-# tag v0.1.0 → GitHub Actions goreleaser publishes linux/darwin/windows binaries
+make check          # fmt + lint + test
+make release        # bump VERSION, tag, push → GoReleaser
+# or: make release BUMP=minor
+# or: make release TAG=v0.1.0
 ```
+
+GitHub Actions:
+- **CI** on push/PR to `main` — build, golangci-lint, test
+- **Release** on `v*` tags — GoReleaser publishes linux/darwin/windows binaries
 
 ## Limits
 

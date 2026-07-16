@@ -1,19 +1,35 @@
-name: ci
+name: CI
 
 on:
   push:
-    branches: [main]
+    branches: [main, master]
   pull_request:
 
+permissions:
+  contents: read
+
 jobs:
-  test:
+  check:
+    name: Build, lint, test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-go@v5
         with:
           go-version-file: go.mod
-      - name: Test
-        run: go test ./...
+          cache: true
+
       - name: Build
-        run: go build -o ghome ./cmd/ghome
+        run: go build ./...
+
+      - name: Build CLI
+        run: go build -o bin/ghome ./cmd/ghome
+
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v8
+        with:
+          version: v2.12.2
+
+      - name: Test
+        run: go test ./... -count=1 -timeout 5m
