@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="320" viewBox="0 0 1280 320" role="img" aria-label="go-google-home-mcp">
+  <defs>
+    <linearGradient id="sky" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1a1410"/>
+      <stop offset="50%" stop-color="#2a1f18"/>
+      <stop offset="100%" stop-color="#1c2420"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#e07a3d" stop-opacity="0"/>
+      <stop offset="20%" stop-color="#e07a3d"/>
+      <stop offset="55%" stop-color="#f0b35a"/>
+      <stop offset="80%" stop-color="#6db8a0"/>
+      <stop offset="100%" stop-color="#6db8a0" stop-opacity="0"/>
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="4" result="b"/>
+      <feMerge>
+        <feMergeNode in="b"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <rect width="1280" height="320" fill="url(#sky)"/>
+  <circle cx="1120" cy="50" r="150" fill="#e07a3d" opacity="0.12"/>
+  <circle cx="140" cy="290" r="110" fill="#6db8a0" opacity="0.12"/>
+
+  <g stroke="#ffffff" stroke-opacity="0.04" stroke-width="1">
+    <path d="M0 80 H1280 M0 160 H1280 M0 240 H1280"/>
+    <path d="M160 0 V320 M320 0 V320 M480 0 V320 M640 0 V320 M800 0 V320 M960 0 V320 M1120 0 V320"/>
+  </g>
+
+  <!-- subtle temperature curve -->
+  <path
+    d="M80 200 C180 200, 220 130, 300 155 S420 240, 520 175 S680 95, 780 145 S920 220, 1040 165 S1160 120, 1200 140"
+    fill="none"
+    stroke="url(#accent)"
+    stroke-width="4"
+    stroke-linecap="round"
+    filter="url(#glow)"
+  />
+  <circle cx="520" cy="175" r="5" fill="#f0b35a" filter="url(#glow)"/>
+  <circle cx="780" cy="145" r="4" fill="#e07a3d"/>
+  <circle cx="1040" cy="165" r="4" fill="#6db8a0"/>
+
+  <!-- thermostat dial mark -->
+  <g transform="translate(88,86)">
+    <circle cx="56" cy="56" r="52" fill="none" stroke="#e07a3d" stroke-width="3" opacity="0.9"/>
+    <circle cx="56" cy="56" r="40" fill="none" stroke="#f0b35a" stroke-width="2" opacity="0.5"/>
+    <path
+      d="M56 22 L56 40"
+      fill="none"
+      stroke="#f4f0ea"
+      stroke-width="4"
+      stroke-linecap="round"
+    />
+    <circle cx="56" cy="56" r="6" fill="#f0b35a" filter="url(#glow)"/>
+    <!-- tiny home roof -->
+    <path
+      d="M40 78 L56 66 L72 78"
+      fill="none"
+      stroke="#6db8a0"
+      stroke-width="3"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+  </g>
+
+  <text x="240" y="138" fill="#f7f3ee" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="58" font-weight="700" letter-spacing="-2">go-google-home</text>
+  <text x="244" y="180" fill="#c9b8a8" font-family="ui-sans-serif, system-ui, Segoe UI, sans-serif" font-size="20" font-weight="500" letter-spacing="2.5">NEST SDM � CLI � MCP</text>
+
+  <rect x="244" y="208" rx="8" ry="8" width="72" height="28" fill="#32251c" stroke="#e07a3d" stroke-opacity="0.5"/>
+  <text x="280" y="226" text-anchor="middle" fill="#f0c9a8" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13">Go</text>
+
+  <rect x="328" y="208" rx="8" ry="8" width="72" height="28" fill="#32251c" stroke="#f0b35a" stroke-opacity="0.5"/>
+  <text x="364" y="226" text-anchor="middle" fill="#f6e2b0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13">CLI</text>
+
+  <rect x="412" y="208" rx="8" ry="8" width="72" height="28" fill="#32251c" stroke="#6db8a0" stroke-opacity="0.5"/>
+  <text x="448" y="226" text-anchor="middle" fill="#c8ebe0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13">MCP</text>
+</svg>

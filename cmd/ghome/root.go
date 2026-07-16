@@ -23,6 +23,7 @@ func init() {
 	rootCmd.AddCommand(mcpCmd)
 	rootCmd.AddCommand(devicesCmd)
 	rootCmd.AddCommand(structuresCmd)
+	rootCmd.AddCommand(roomsCmd)
 	rootCmd.AddCommand(thermostatCmd)
 }
 

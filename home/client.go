@@ -196,6 +196,36 @@ func (c *Client) ListStructures(ctx context.Context) ([]Structure, error) {
 	return resp.Structures, nil
 }
 
+// GetStructure fetches a single structure by resource name or bare id.
+func (c *Client) GetStructure(ctx context.Context, structureName string) (*Structure, error) {
+	path := normalizeStructureName(c.session.ProjectID, structureName)
+	var s Structure
+	if err := c.doJSON(ctx, http.MethodGet, path, nil, &s); err != nil {
+		return nil, err
+	}
+	return &s, nil
+}
+
+// ListRooms returns rooms in a structure.
+func (c *Client) ListRooms(ctx context.Context, structureName string) ([]Room, error) {
+	path := normalizeStructureName(c.session.ProjectID, structureName) + "/rooms"
+	var resp listRoomsResponse
+	if err := c.doJSON(ctx, http.MethodGet, path, nil, &resp); err != nil {
+		return nil, err
+	}
+	return resp.Rooms, nil
+}
+
+// GetRoom fetches a single room by structure + room id (or full resource name for room).
+func (c *Client) GetRoom(ctx context.Context, structureName, roomName string) (*Room, error) {
+	path := normalizeRoomName(c.session.ProjectID, structureName, roomName)
+	var room Room
+	if err := c.doJSON(ctx, http.MethodGet, path, nil, &room); err != nil {
+		return nil, err
+	}
+	return &room, nil
+}
+
 // ExecuteCommand runs an SDM trait command on a device.
 func (c *Client) ExecuteCommand(ctx context.Context, deviceName, command string, params map[string]any) error {
 	path := normalizeDeviceName(c.session.ProjectID, deviceName) + ":executeCommand"
@@ -209,6 +239,22 @@ func normalizeDeviceName(projectID, deviceName string) string {
 	}
 	id := strings.TrimPrefix(deviceName, "devices/")
 	return fmt.Sprintf("enterprises/%s/devices/%s", projectID, id)
+}
+
+func normalizeStructureName(projectID, structureName string) string {
+	if strings.HasPrefix(structureName, "enterprises/") {
+		return structureName
+	}
+	id := strings.TrimPrefix(structureName, "structures/")
+	return fmt.Sprintf("enterprises/%s/structures/%s", projectID, id)
+}
+
+func normalizeRoomName(projectID, structureName, roomName string) string {
+	if strings.HasPrefix(roomName, "enterprises/") {
+		return roomName
+	}
+	id := strings.TrimPrefix(roomName, "rooms/")
+	return normalizeStructureName(projectID, structureName) + "/rooms/" + id
 }
 
 // SummarizeDevice builds a compact listing row.

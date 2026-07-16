@@ -20,6 +20,12 @@ type Structure struct {
 	Traits map[string]any `json:"traits"`
 }
 
+// Room is a room within a structure.
+type Room struct {
+	Name   string         `json:"name"`
+	Traits map[string]any `json:"traits"`
+}
+
 // listDevicesResponse is the SDM ListDevices payload.
 type listDevicesResponse struct {
 	Devices []Device `json:"devices"`
@@ -27,6 +33,10 @@ type listDevicesResponse struct {
 
 type listStructuresResponse struct {
 	Structures []Structure `json:"structures"`
+}
+
+type listRoomsResponse struct {
+	Rooms []Room `json:"rooms"`
 }
 
 // ExecuteCommandRequest is the SDM executeCommand body.

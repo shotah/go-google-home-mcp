@@ -1,6 +1,10 @@
 package home
 
-import "context"
+import (
+	"context"
+	"fmt"
+	"time"
+)
 
 // SetThermostatMode sets HEAT / COOL / HEATCOOL / OFF.
 func (c *Client) SetThermostatMode(ctx context.Context, deviceName, mode string) error {
@@ -36,4 +40,14 @@ func (c *Client) SetThermostatEco(ctx context.Context, deviceName, mode string) 
 	return c.ExecuteCommand(ctx, deviceName, "sdm.devices.commands.ThermostatEco.SetMode", map[string]any{
 		"mode": mode,
 	})
+}
+
+// SetFanTimer turns the thermostat fan on or off.
+// When mode is ON, duration is optional (SDM defaults to 15 minutes if omitted).
+func (c *Client) SetFanTimer(ctx context.Context, deviceName, mode string, duration time.Duration) error {
+	params := map[string]any{"timerMode": mode}
+	if duration > 0 {
+		params["duration"] = fmt.Sprintf("%ds", int(duration.Seconds()))
+	}
+	return c.ExecuteCommand(ctx, deviceName, "sdm.devices.commands.Fan.SetTimer", params)
 }

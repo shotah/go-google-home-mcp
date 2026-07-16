@@ -14,6 +14,8 @@ var (
 	flagHeatC            float64
 	flagCoolC            float64
 	flagEcoMode          string
+	flagFanMode          string
+	flagFanDuration      time.Duration
 )
 
 var thermostatCmd = &cobra.Command{
@@ -39,6 +41,12 @@ var thermostatEcoCmd = &cobra.Command{
 	RunE:  runThermostatEco,
 }
 
+var thermostatFanCmd = &cobra.Command{
+	Use:   "fan",
+	Short: "Set fan timer (ON|OFF)",
+	RunE:  runThermostatFan,
+}
+
 func init() {
 	thermostatCmd.PersistentFlags().StringVar(&flagThermostatDevice, "device", "", "Device id or full resource name (required)")
 	_ = thermostatCmd.MarkPersistentFlagRequired("device")
@@ -52,7 +60,11 @@ func init() {
 	thermostatEcoCmd.Flags().StringVar(&flagEcoMode, "mode", "", "MANUAL_ECO|OFF")
 	_ = thermostatEcoCmd.MarkFlagRequired("mode")
 
-	thermostatCmd.AddCommand(thermostatModeCmd, thermostatTempCmd, thermostatEcoCmd)
+	thermostatFanCmd.Flags().StringVar(&flagFanMode, "mode", "", "ON|OFF")
+	_ = thermostatFanCmd.MarkFlagRequired("mode")
+	thermostatFanCmd.Flags().DurationVar(&flagFanDuration, "duration", 0, "How long to run when ON (e.g. 1h, 30m); SDM default is 15m")
+
+	thermostatCmd.AddCommand(thermostatModeCmd, thermostatTempCmd, thermostatEcoCmd, thermostatFanCmd)
 }
 
 func runThermostatMode(_ *cobra.Command, _ []string) error {
@@ -105,5 +117,19 @@ func runThermostatEco(_ *cobra.Command, _ []string) error {
 		return err
 	}
 	fmt.Println(`{"ok":true,"command":"SetEco","mode":"` + flagEcoMode + `"}`)
+	return nil
+}
+
+func runThermostatFan(_ *cobra.Command, _ []string) error {
+	client, err := loadClient()
+	if err != nil {
+		return err
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+	if err := client.SetFanTimer(ctx, flagThermostatDevice, flagFanMode, flagFanDuration); err != nil {
+		return err
+	}
+	fmt.Println(`{"ok":true,"command":"SetFanTimer","mode":"` + flagFanMode + `"}`)
 	return nil
 }

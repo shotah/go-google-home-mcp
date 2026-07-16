@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"time"
 
 	"github.com/mark3labs/mcp-go/mcp"
 	"github.com/mark3labs/mcp-go/server"
@@ -74,6 +75,59 @@ func runMCP(_ *cobra.Command, _ []string) error {
 	})
 
 	s.AddTool(mcp.NewTool(
+		"get_structure",
+		mcp.WithDescription("Get one Nest structure (home) by id."),
+		mcp.WithString("structure", mcp.Required(), mcp.Description("Structure id or full enterprises/.../structures/... name")),
+	), func(ctx context.Context, req mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+		structure, err := req.RequireString("structure")
+		if err != nil {
+			return mcpError(err), nil
+		}
+		s, err := client.GetStructure(ctx, structure)
+		if err != nil {
+			return mcpError(err), nil
+		}
+		return mcpJSON(s)
+	})
+
+	s.AddTool(mcp.NewTool(
+		"list_rooms",
+		mcp.WithDescription("List rooms in a Nest structure."),
+		mcp.WithString("structure", mcp.Required(), mcp.Description("Structure id or full resource name")),
+	), func(ctx context.Context, req mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+		structure, err := req.RequireString("structure")
+		if err != nil {
+			return mcpError(err), nil
+		}
+		rooms, err := client.ListRooms(ctx, structure)
+		if err != nil {
+			return mcpError(err), nil
+		}
+		return mcpJSON(rooms)
+	})
+
+	s.AddTool(mcp.NewTool(
+		"get_room",
+		mcp.WithDescription("Get one room in a Nest structure."),
+		mcp.WithString("structure", mcp.Required(), mcp.Description("Structure id or full resource name")),
+		mcp.WithString("room", mcp.Required(), mcp.Description("Room id or full enterprises/.../rooms/... name")),
+	), func(ctx context.Context, req mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+		structure, err := req.RequireString("structure")
+		if err != nil {
+			return mcpError(err), nil
+		}
+		room, err := req.RequireString("room")
+		if err != nil {
+			return mcpError(err), nil
+		}
+		r, err := client.GetRoom(ctx, structure, room)
+		if err != nil {
+			return mcpError(err), nil
+		}
+		return mcpJSON(r)
+	})
+
+	s.AddTool(mcp.NewTool(
 		"set_thermostat_mode",
 		mcp.WithDescription("Set thermostat mode: HEAT, COOL, HEATCOOL, or OFF."),
 		mcp.WithString("device", mcp.Required(), mcp.Description("Device id or resource name")),
@@ -141,6 +195,33 @@ func runMCP(_ *cobra.Command, _ []string) error {
 			return mcpError(err), nil
 		}
 		return mcpJSON(map[string]any{"ok": true, "mode": mode})
+	})
+
+	s.AddTool(mcp.NewTool(
+		"set_fan_timer",
+		mcp.WithDescription("Turn the thermostat fan on or off. Optional duration_seconds when ON (SDM default 15 minutes)."),
+		mcp.WithString("device", mcp.Required(), mcp.Description("Device id or resource name")),
+		mcp.WithString("mode", mcp.Required(), mcp.Description("ON or OFF")),
+		mcp.WithNumber("duration_seconds", mcp.Description("Seconds to run when mode is ON")),
+	), func(ctx context.Context, req mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+		device, err := req.RequireString("device")
+		if err != nil {
+			return mcpError(err), nil
+		}
+		mode, err := req.RequireString("mode")
+		if err != nil {
+			return mcpError(err), nil
+		}
+		args := req.GetArguments()
+		secs, hasSecs := numberArg(args, "duration_seconds")
+		var duration time.Duration
+		if hasSecs && secs > 0 {
+			duration = time.Duration(secs) * time.Second
+		}
+		if err := client.SetFanTimer(ctx, device, mode, duration); err != nil {
+			return mcpError(err), nil
+		}
+		return mcpJSON(map[string]any{"ok": true, "mode": mode, "duration_seconds": secs})
 	})
 
 	return server.ServeStdio(s)
